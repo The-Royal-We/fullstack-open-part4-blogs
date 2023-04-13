@@ -30,8 +30,8 @@ const mostBlogs = (blogs) => {
 
   return Object.keys(blogAuthorGroups).reduce(
     (currentMax, author) => {
-      const authorBlogGroup = blogAuthorGroups[author];
-      const currentBlogListLength = authorBlogGroup.length;
+      const blogList = blogAuthorGroups[author];
+      const currentBlogListLength = blogList.length;
       if (currentBlogListLength > currentMax.blogs) {
         return {
           author,
@@ -46,5 +46,32 @@ const mostBlogs = (blogs) => {
     }
   );
 };
+const mostLikes = (blogs) => {
+  if (!blogs || blogs.length === 0) {
+    return null;
+  }
 
-module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs };
+  const blogAuthorGroups = _.groupBy(blogs, "author");
+
+  return Object.keys(blogAuthorGroups).reduce(
+    (currentMax, author) => {
+      const blogList = blogAuthorGroups[author];
+      const likes = blogList
+        .map((blog) => blog.likes)
+        .reduce((acc, numOfLikes) => acc + numOfLikes, 0);
+      if (likes > currentMax.likes) {
+        return {
+          author,
+          likes,
+        };
+      }
+      return currentMax;
+    },
+    {
+      author: "",
+      likes: -1,
+    }
+  );
+};
+
+module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes };

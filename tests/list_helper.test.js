@@ -3,6 +3,7 @@ const {
   dummy,
   totalLikes,
   mostBlogs,
+  mostLikes,
 } = require("../utils/list_helper");
 const { listWithOneBlog, listWithManyBlogs } = require("./testHelpers");
 
@@ -68,12 +69,12 @@ describe("totalLikes unit tests", () => {
 describe("mostBlogs unit tests", () => {
   test("when list is null, then return 0", () => {
     const result = mostBlogs(null);
-    expect(result).toBe(0);
+    expect(result).toBe(null);
   });
 
   test("when list has no blogs, then return 0", () => {
     const result = mostBlogs([]);
-    expect(result).toBe(0);
+    expect(result).toBe(null);
   });
 
   test("when list only has one blog, then return author with 1 blog", () => {
@@ -88,6 +89,32 @@ describe("mostBlogs unit tests", () => {
     expect(result).toStrictEqual({
       author: "Robert C. Martin",
       blogs: 3,
+    });
+  });
+});
+describe("mostLikes unit tests", () => {
+  test("when list is null, then return 0", () => {
+    const result = mostLikes(null);
+    expect(result).toBe(null);
+  });
+
+  test("when list has no blogs, then return 0", () => {
+    const result = mostLikes([]);
+    expect(result).toBe(null);
+  });
+
+  test("when list only has one blog, then return author with most likes", () => {
+    const result = mostLikes(listWithOneBlog);
+    expect(result).toStrictEqual({
+      author: "Edsger W. Dijkstra",
+      likes: 5,
+    });
+  });
+  test("when list has many blog, then return author with most likes", () => {
+    const result = mostLikes(listWithManyBlogs);
+    expect(result).toStrictEqual({
+      author: "Edsger W. Dijkstra",
+      likes: 17,
     });
   });
 });
