@@ -1,0 +1,24 @@
+{
+  "name": "fullstack-open-part4-blogs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/The-Royal-We/fullstack-open-part4-blogs.git"
+  },
+  "author": "Brendan Carroll",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/The-Royal-We/fullstack-open-part4-blogs/issues"
+  },
+  "homepage": "https://github.com/The-Royal-We/fullstack-open-part4-blogs#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "mongoose": "^7.0.3"
+  }
+}
