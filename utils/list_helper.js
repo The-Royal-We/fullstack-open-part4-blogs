@@ -1,3 +1,5 @@
+const _ = require("lodash");
+
 // eslint-disable-next-line no-unused-vars
 const dummy = (_blogs) => 1;
 
@@ -19,4 +21,30 @@ const favoriteBlog = (blogs) => {
   );
 };
 
-module.exports = { dummy, totalLikes, favoriteBlog };
+const mostBlogs = (blogs) => {
+  if (!blogs || blogs.length === 0) {
+    return null;
+  }
+
+  const blogAuthorGroups = _.groupBy(blogs, "author");
+
+  return Object.keys(blogAuthorGroups).reduce(
+    (currentMax, author) => {
+      const authorBlogGroup = blogAuthorGroups[author];
+      const currentBlogListLength = authorBlogGroup.length;
+      if (currentBlogListLength > currentMax.blogs) {
+        return {
+          author,
+          blogs: currentBlogListLength,
+        };
+      }
+      return currentMax;
+    },
+    {
+      author: "",
+      blogs: -1,
+    }
+  );
+};
+
+module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs };
