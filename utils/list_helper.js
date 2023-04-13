@@ -8,6 +8,6 @@ const totalLikes = (blogs) => {
   return blogs.map((b) => b.likes).reduce((a, b) => a + b, 0);
 };
 
-const favoriteBlog = (_blogs) => [];
+const favoriteBlog = (_blogs) => null;
 
 module.exports = { dummy, totalLikes, favoriteBlog };
