@@ -5,4 +5,8 @@ describe("favoriteBlog unit tests", () => {
     const result = favoriteBlog(null);
     expect(result).toStrictEqual([]);
   });
+  test("when list is empty then return empty list", () => {
+    const result = favoriteBlog(null);
+    expect(result).toStrictEqual([]);
+  });
 });
