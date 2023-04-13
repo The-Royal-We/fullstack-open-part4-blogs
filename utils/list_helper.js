@@ -28,23 +28,19 @@ const mostBlogs = (blogs) => {
 
   const blogAuthorGroups = _.groupBy(blogs, "author");
 
-  return Object.keys(blogAuthorGroups).reduce(
-    (currentMax, author) => {
-      const blogList = blogAuthorGroups[author];
-      const currentBlogListLength = blogList.length;
-      if (currentBlogListLength > currentMax.blogs) {
-        return {
-          author,
-          blogs: currentBlogListLength,
-        };
-      }
-      return currentMax;
-    },
-    {
-      author: "",
-      blogs: -1,
-    }
+  const authorBlogSums = _.mapValues(
+    blogAuthorGroups,
+    (blogList) => blogList.length
   );
+
+  const [author, blogNumber] = _.maxBy(
+    _.toPairs(authorBlogSums, (pair) => pair[1])
+  );
+
+  return {
+    author,
+    blogs: blogNumber,
+  };
 };
 const mostLikes = (blogs) => {
   if (!blogs || blogs.length === 0) {
