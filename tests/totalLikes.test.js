@@ -63,6 +63,25 @@ describe("totalLikes unit tests", () => {
     },
   ];
 
+  const listWithManyBlogs = [
+    {
+      _id: "5a422a851b54a676234d17f7",
+      title: "React patterns",
+      author: "Michael Chan",
+      url: "https://reactpatterns.com/",
+      likes: 7,
+      __v: 0,
+    },
+    {
+      _id: "5a422aa71b54a676234d17f8",
+      title: "Go To Statement Considered Harmful",
+      author: "Edsger W. Dijkstra",
+      url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
+      likes: 5,
+      __v: 0,
+    },
+  ];
+
   test("when list is null, then return 0", () => {
     const result = totalLikes(null);
     expect(result).toBe(0);
@@ -73,8 +92,13 @@ describe("totalLikes unit tests", () => {
     expect(result).toBe(0);
   });
 
-  test("when list only has one blog then total likes eq likes of that blog", () => {
+  test("when list only has one blog, then total likes eq likes of that blog", () => {
     const result = totalLikes(listWithOneBlog);
     expect(result).toBe(1);
+  });
+
+  test("when list only has many blogs, then total likes eq sum of all likes of all blogs", () => {
+    const result = totalLikes(listWithManyBlogs);
+    expect(result).toBe(12);
   });
 });
