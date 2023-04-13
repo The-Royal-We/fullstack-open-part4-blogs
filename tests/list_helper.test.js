@@ -1,5 +1,14 @@
-const { favoriteBlog } = require("../utils/list_helper");
+const { favoriteBlog, dummy, totalLikes } = require("../utils/list_helper");
 const { listWithOneBlog, listWithManyBlogs } = require("./testHelpers");
+
+describe("dummy unit tests", () => {
+  test("dummy returns one", () => {
+    const blogs = [];
+
+    const result = dummy(blogs);
+    expect(result).toBe(1);
+  });
+});
 
 describe("favoriteBlog unit tests", () => {
   test("when list is null then return null", () => {
@@ -26,5 +35,27 @@ describe("favoriteBlog unit tests", () => {
       likes: 12,
       __v: 0,
     });
+  });
+});
+
+describe("totalLikes unit tests", () => {
+  test("when list is null, then return 0", () => {
+    const result = totalLikes(null);
+    expect(result).toBe(0);
+  });
+
+  test("when list has no blogs, then return 0", () => {
+    const result = totalLikes([]);
+    expect(result).toBe(0);
+  });
+
+  test("when list only has one blog, then total likes eq likes of that blog", () => {
+    const result = totalLikes(listWithOneBlog);
+    expect(result).toBe(5);
+  });
+
+  test("when list only has many blogs, then total likes eq sum of all likes of all blogs", () => {
+    const result = totalLikes(listWithManyBlogs);
+    expect(result).toBe(36);
   });
 });
