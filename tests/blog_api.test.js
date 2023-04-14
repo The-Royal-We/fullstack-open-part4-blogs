@@ -26,6 +26,20 @@ describe("Blog Api Tests", () => {
     response.body.forEach((blog) => expect(blog.id).toBeDefined());
   });
 
+  test("a blog can be added", async () => {
+    await api
+      .post("/api/blogs")
+      .send(helper.mockSingleBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.listWithManyBlogs.length + 1);
+
+    const titles = blogsAtEnd.map((b) => b.title);
+    expect(titles).toContain("TestBlog");
+  });
+
   afterAll(() => {
     mongoose.connection.close();
   });

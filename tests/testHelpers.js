@@ -1,3 +1,5 @@
+const Blog = require("../models/blog");
+
 const listWithManyBlogs = [
   {
     _id: "5a422a851b54a676234d17f7",
@@ -60,7 +62,21 @@ const listWithOneBlog = [
   },
 ];
 
+const mockSingleBlog = {
+  title: "TestBlog",
+  author: "Mock Author",
+  url: "http://this_is_fake.ie",
+  likes: 25,
+};
+
+const blogsInDb = async () => {
+  const blogs = await Blog.find({});
+  return blogs.map((blog) => blog.toJSON());
+};
+
 module.exports = {
   listWithManyBlogs,
   listWithOneBlog,
+  mockSingleBlog,
+  blogsInDb,
 };
