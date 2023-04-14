@@ -44,15 +44,17 @@ const mostLikes = (blogs) => {
     return null;
   }
 
-  const blogAuthorGroups = _.groupBy(blogs, "author");
+  const blogLikeTotals = _(blogs)
+    .groupBy("author")
+    .mapValues((blogList) =>
+      _(blogList)
+        .flatMap((blog) => blog.likes)
+        .sum()
+    )
+    .toPairs()
+    .value();
 
-  const authorBlogLikes = _.mapValues(blogAuthorGroups, (blogList) =>
-    _.sum(_.flatMap(blogList, (blog) => blog.likes))
-  );
-
-  const authorLikePairs = _.toPairs(authorBlogLikes);
-
-  const [author, likes] = _.maxBy(authorLikePairs, (pair) => pair[1]);
+  const [author, likes] = _.maxBy(blogLikeTotals, (pair) => pair[1]);
 
   return {
     author,
