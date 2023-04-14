@@ -71,9 +71,34 @@ describe("Blog Api Tests", () => {
 
     expect(blogsAtEnd).toHaveLength(helper.listWithManyBlogs.length - 1);
 
-    const contents = blogsAtEnd.map((r) => r.title);
+    const title = blogsAtEnd.map((r) => r.title);
 
-    expect(contents).not.toContain(blogToDelete.title);
+    expect(title).not.toContain(blogToDelete.title);
+  });
+
+  test("a blog can be updated", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+
+    const newBlog = {
+      ...blogToUpdate,
+      title: "Mock Title",
+      author: "Mock Author",
+    };
+
+    const response = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(newBlog)
+      .expect(200);
+
+    const updatedBlog = response.body;
+    console.log("updatedBlog", updatedBlog);
+
+    const blogsAtEnd = await helper.blogsInDb();
+
+    expect(blogsAtEnd).toHaveLength(helper.listWithManyBlogs.length);
+
+    expect(blogsAtEnd).toContainEqual(updatedBlog);
   });
 
   afterAll(() => {

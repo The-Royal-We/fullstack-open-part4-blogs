@@ -23,6 +23,21 @@ blogRoute.post("/", async (request, response) => {
   return null;
 });
 
+blogRoute.put("/:id", async (request, response) => {
+  const { title, author, url, likes } = request.body;
+  const updatedBlog = await Blog.findByIdAndUpdate(
+    request.params.id,
+    {
+      title,
+      author,
+      url,
+      likes,
+    },
+    { new: true }
+  );
+  response.status(200).json(updatedBlog);
+});
+
 blogRoute.delete("/:id", async (request, response) => {
   await Blog.findByIdAndDelete(request.params.id);
   response.status(204).end();
