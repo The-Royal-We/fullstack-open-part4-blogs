@@ -9,23 +9,17 @@ const favoriteBlog = (blogs) =>
   _.isEmpty(blogs) ? null : _(blogs).maxBy((blog) => blog.likes);
 
 const mostBlogs = (blogs) => {
-  if (!blogs || blogs.length === 0) {
-    return null;
-  }
-
-  const blogAuthorSums = _(blogs)
+  const authorWithMostBlogs = _(blogs)
     .groupBy("author")
-    .mapValues((blogList) => blogList.length)
-    .toPairs()
-    .value();
+    .map((blogList, author) => ({
+      author,
+      blogs: blogList.length,
+    }))
+    .maxBy("blogs");
 
-  const [author, blogNumber] = _.maxBy(blogAuthorSums, (pair) => pair[1]);
-
-  return {
-    author,
-    blogs: blogNumber,
-  };
+  return _.isEmpty(blogs) ? null : authorWithMostBlogs;
 };
+
 const mostLikes = (blogs) => {
   if (!blogs || blogs.length === 0) {
     return null;

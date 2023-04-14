@@ -92,6 +92,7 @@ describe("mostBlogs unit tests", () => {
     });
   });
 });
+
 describe("mostLikes unit tests", () => {
   test("when list is null, then return 0", () => {
     const result = mostLikes(null);
