@@ -40,6 +40,18 @@ describe("Blog Api Tests", () => {
     expect(titles).toContain("TestBlog");
   });
 
+  test("a blog with missing likes will be saved with likes eq 0", async () => {
+    const { likes, ...blogWithoutLikes } = helper.mockSingleBlog;
+
+    const response = await api
+      .post("/api/blogs")
+      .send(blogWithoutLikes)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+
+    expect(response.body.likes).toBe(0);
+  });
+
   afterAll(() => {
     mongoose.connection.close();
   });
