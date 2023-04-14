@@ -10,16 +10,8 @@ const totalLikes = (blogs) => {
   return blogs.map((b) => b.likes).reduce((a, b) => a + b, 0);
 };
 
-const favoriteBlog = (blogs) => {
-  if (!blogs || blogs.length === 0) {
-    return null;
-  }
-  return blogs.reduce(
-    (currentMostLiked, blog) =>
-      blog.likes > currentMostLiked.likes ? blog : currentMostLiked,
-    { likes: -1000 }
-  );
-};
+const favoriteBlog = (blogs) =>
+  _.isEmpty(blogs) ? null : _(blogs).maxBy((blog) => blog.likes);
 
 const mostBlogs = (blogs) => {
   if (!blogs || blogs.length === 0) {
