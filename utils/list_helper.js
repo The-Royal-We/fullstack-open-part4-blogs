@@ -26,16 +26,13 @@ const mostBlogs = (blogs) => {
     return null;
   }
 
-  const blogAuthorGroups = _.groupBy(blogs, "author");
+  const blogAuthorSums = _(blogs)
+    .groupBy("author")
+    .mapValues((blogList) => blogList.length)
+    .toPairs()
+    .value();
 
-  const authorBlogSums = _.mapValues(
-    blogAuthorGroups,
-    (blogList) => blogList.length
-  );
-
-  const [author, blogNumber] = _.maxBy(
-    _.toPairs(authorBlogSums, (pair) => pair[1])
-  );
+  const [author, blogNumber] = _.maxBy(blogAuthorSums, (pair) => pair[1]);
 
   return {
     author,
