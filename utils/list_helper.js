@@ -21,26 +21,15 @@ const mostBlogs = (blogs) => {
 };
 
 const mostLikes = (blogs) => {
-  if (!blogs || blogs.length === 0) {
-    return null;
-  }
-
-  const blogLikeTotals = _(blogs)
+  const authorWithMostLikes = _(blogs)
     .groupBy("author")
-    .mapValues((blogList) =>
-      _(blogList)
-        .flatMap((blog) => blog.likes)
-        .sum()
-    )
-    .toPairs()
-    .value();
+    .map((blogList, author) => ({
+      author,
+      likes: _.sumBy(blogList, "likes"),
+    }))
+    .maxBy("likes");
 
-  const [author, likes] = _.maxBy(blogLikeTotals, (pair) => pair[1]);
-
-  return {
-    author,
-    likes,
-  };
+  return _.isEmpty(blogs) ? null : authorWithMostLikes;
 };
 
 module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes };
