@@ -52,6 +52,15 @@ describe("Blog Api Tests", () => {
     expect(response.body.likes).toBe(0);
   });
 
+  test("a blog with missing title return a 400 and not be added to db", async () => {
+    const { title, ...blogWithoutTitle } = helper.mockSingleBlog;
+
+    await api.post("/api/blogs").send(blogWithoutTitle).expect(400);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.listWithManyBlogs.length);
+  });
+
   afterAll(() => {
     mongoose.connection.close();
   });
