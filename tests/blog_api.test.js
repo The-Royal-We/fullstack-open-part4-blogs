@@ -21,6 +21,11 @@ describe("Blog Api Tests", () => {
     expect(response.body).toHaveLength(helper.listWithManyBlogs.length);
   });
 
+  test("blogs returned all contain the id field", async () => {
+    const response = await api.get("/api/blogs");
+    response.body.forEach((blog) => expect(blog.id).toBeDefined());
+  });
+
   afterAll(() => {
     mongoose.connection.close();
   });
