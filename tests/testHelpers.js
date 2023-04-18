@@ -88,6 +88,20 @@ const initialiseUsers = async () => {
   await user.save();
 };
 
+const initialiseData = async () => {
+  await initialiseUsers();
+  await Blog.deleteMany({});
+
+  const users = await User.find({});
+  const user = users[0];
+
+  const blogObjects = listWithManyBlogs.map(
+    (blog) => new Blog({ ...blog, user: user.id })
+  );
+  const promiseArray = blogObjects.map((blog) => blog.save());
+  await Promise.all(promiseArray);
+};
+
 module.exports = {
   listWithManyBlogs,
   listWithOneBlog,
@@ -95,4 +109,5 @@ module.exports = {
   blogsInDb,
   initialiseUsers,
   usersInDb,
+  initialiseData,
 };

@@ -4,16 +4,13 @@ const supertest = require("supertest");
 const helper = require("./testHelpers");
 const app = require("../app");
 const Blog = require("../models/blog");
+const User = require("../models/user");
 
 const api = supertest(app);
 
 describe("Blog Api Tests", () => {
   beforeEach(async () => {
-    await Blog.deleteMany({});
-
-    const blogObjects = helper.listWithManyBlogs.map((blog) => new Blog(blog));
-    const promiseArray = blogObjects.map((blog) => blog.save());
-    await Promise.all(promiseArray);
+    await helper.initialiseData();
   });
 
   test("all blogs are returned", async () => {
@@ -21,9 +18,10 @@ describe("Blog Api Tests", () => {
     expect(response.body).toHaveLength(helper.listWithManyBlogs.length);
   });
 
-  test("blogs returned all contain the id field", async () => {
+  test("blogs returned all contain the id and user field", async () => {
     const response = await api.get("/api/blogs");
     response.body.forEach((blog) => expect(blog.id).toBeDefined());
+    response.body.forEach((blog) => expect(blog.user).toBeDefined());
   });
 
   test("a blog can be added", async () => {
@@ -92,7 +90,6 @@ describe("Blog Api Tests", () => {
       .expect(200);
 
     const updatedBlog = response.body;
-    console.log("updatedBlog", updatedBlog);
 
     const blogsAtEnd = await helper.blogsInDb();
 

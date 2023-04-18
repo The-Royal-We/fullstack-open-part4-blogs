@@ -8,7 +8,7 @@ const api = supertest(app);
 
 describe("when there is initially one user in db", () => {
   beforeEach(async () => {
-    await helper.initialiseUsers();
+    await helper.initialiseData();
   });
 
   afterAll(async () => {
@@ -89,5 +89,6 @@ describe("when there is initially one user in db", () => {
     const { body } = await api.get("/api/users");
 
     expect(body).toHaveLength(usersAtStart.length);
+    expect(body);
   });
 });
