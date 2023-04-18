@@ -1,4 +1,6 @@
+const bcrypt = require("bcrypt");
 const Blog = require("../models/blog");
+const User = require("../models/user");
 
 const listWithManyBlogs = [
   {
@@ -74,9 +76,23 @@ const blogsInDb = async () => {
   return blogs.map((blog) => blog.toJSON());
 };
 
+const usersInDb = async () => {
+  const users = await User.find({});
+  return users.map((user) => user.toJSON());
+};
+
+const initialiseUsers = async () => {
+  await User.deleteMany({});
+  const passwordHash = await bcrypt.hash("sekret", 10);
+  const user = new User({ username: "root", passwordHash });
+  await user.save();
+};
+
 module.exports = {
   listWithManyBlogs,
   listWithOneBlog,
   mockSingleBlog,
   blogsInDb,
+  initialiseUsers,
+  usersInDb,
 };
