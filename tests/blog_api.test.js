@@ -7,8 +7,14 @@ const app = require("../app");
 const api = supertest(app);
 
 describe("Blog Api Tests", () => {
+  let activeToken;
   beforeEach(async () => {
     await helper.initialiseData();
+    const { body } = await api
+      .post("/api/login")
+      .send({ username: "root", password: "sekret" })
+      .expect(200);
+    activeToken = `Bearer ${body.token}`;
   });
 
   test("all blogs are returned", async () => {
@@ -26,6 +32,7 @@ describe("Blog Api Tests", () => {
     await api
       .post("/api/blogs")
       .send(helper.mockSingleBlog)
+      .set("Authorization", activeToken)
       .expect(201)
       .expect("Content-Type", /application\/json/);
 
@@ -42,6 +49,7 @@ describe("Blog Api Tests", () => {
     const response = await api
       .post("/api/blogs")
       .send(blogWithoutLikes)
+      .set("Authorization", activeToken)
       .expect(201)
       .expect("Content-Type", /application\/json/);
 
@@ -51,10 +59,31 @@ describe("Blog Api Tests", () => {
   test("a blog with missing title return a 400 and not be added to db", async () => {
     const { title, ...blogWithoutTitle } = helper.mockSingleBlog;
 
-    await api.post("/api/blogs").send(blogWithoutTitle).expect(400);
+    await api
+      .post("/api/blogs")
+      .send(blogWithoutTitle)
+      .set("Authorization", activeToken)
+      .expect(400);
 
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(helper.listWithManyBlogs.length);
+  });
+
+  test("a blog cannot be entered without authenticating", async () => {
+    const response = await api
+      .post("/api/blogs")
+      .send(helper.mockSingleBlog)
+
+      .expect(401)
+      .expect("Content-Type", /application\/json/);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.listWithManyBlogs.length);
+
+    const titles = blogsAtEnd.map((b) => b.title);
+    expect(titles).not.toContain("TestBlog");
+
+    expect(response.body).toHaveProperty("error", "invalid token");
   });
 
   test("a blog can be deleted", async () => {
