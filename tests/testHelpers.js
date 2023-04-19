@@ -100,6 +100,26 @@ const initialiseData = async () => {
   );
   const promiseArray = blogObjects.map((blog) => blog.save());
   await Promise.all(promiseArray);
+  const savedBlogs = await Blog.find({});
+
+  const ids = savedBlogs.map(({ id }) => id);
+
+  user.blogs = user.blogs.concat(ids);
+  await user.save();
+};
+
+const validateBlogsStructure = (blogs) => {
+  expect(blogs).toEqual(
+    expect.arrayContaining([
+      {
+        title: expect.any(String),
+        url: expect.any(String),
+        likes: expect.any(Number),
+        author: expect.any(String),
+        id: expect.any(String),
+      },
+    ])
+  );
 };
 
 module.exports = {
@@ -110,4 +130,5 @@ module.exports = {
   initialiseUsers,
   usersInDb,
   initialiseData,
+  validateBlogsStructure,
 };

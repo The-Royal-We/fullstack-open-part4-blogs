@@ -89,6 +89,10 @@ describe("when there is initially one user in db", () => {
     const { body } = await api.get("/api/users");
 
     expect(body).toHaveLength(usersAtStart.length);
-    expect(body);
+  });
+
+  test("users have blogs associated to them", async () => {
+    const { body: users } = await api.get("/api/users");
+    users.forEach((user) => helper.validateBlogsStructure(user.blogs));
   });
 });
