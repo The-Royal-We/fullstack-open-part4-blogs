@@ -3,8 +3,6 @@ const mongoose = require("mongoose");
 const supertest = require("supertest");
 const helper = require("./testHelpers");
 const app = require("../app");
-const Blog = require("../models/blog");
-const User = require("../models/user");
 
 const api = supertest(app);
 
@@ -84,18 +82,18 @@ describe("Blog Api Tests", () => {
       author: "Mock Author",
     };
 
-    const response = await api
-      .put(`/api/blogs/${blogToUpdate.id}`)
-      .send(newBlog)
-      .expect(200);
+    const partialObjectMatch = expect.objectContaining({
+      title: "Mock Title",
+      author: "Mock Author",
+    });
 
-    const updatedBlog = response.body;
+    await api.put(`/api/blogs/${blogToUpdate.id}`).send(newBlog).expect(200);
 
     const blogsAtEnd = await helper.blogsInDb();
 
     expect(blogsAtEnd).toHaveLength(helper.listWithManyBlogs.length);
 
-    expect(blogsAtEnd).toContainEqual(updatedBlog);
+    expect(blogsAtEnd).toContainEqual(partialObjectMatch);
   });
 
   afterAll(() => {
