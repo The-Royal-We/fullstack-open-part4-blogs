@@ -73,7 +73,6 @@ describe("Blog Api Tests", () => {
     const response = await api
       .post("/api/blogs")
       .send(helper.mockSingleBlog)
-
       .expect(401)
       .expect("Content-Type", /application\/json/);
 
@@ -90,7 +89,10 @@ describe("Blog Api Tests", () => {
     const blogsAtStart = await helper.blogsInDb();
     const blogToDelete = blogsAtStart[0];
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set("Authorization", activeToken)
+      .expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
 
@@ -99,6 +101,90 @@ describe("Blog Api Tests", () => {
     const title = blogsAtEnd.map((r) => r.title);
 
     expect(title).not.toContain(blogToDelete.title);
+  });
+
+  test("a blog cannot be deleted with invalid auth", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToDelete = blogsAtStart[0];
+    const response = await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(401);
+
+    expect(response.body).toHaveProperty("error", "invalid token");
+    const blogsAtEnd = await helper.blogsInDb();
+
+    expect(blogsAtEnd).toHaveLength(helper.listWithManyBlogs.length);
+  });
+
+  test("a blog can only be deleted by the same person that created it", async () => {
+    const newMockUserUsername = "createNewBlog";
+    const newMockUserPassword = "12345";
+
+    // create new user
+    await api
+      .post("/api/users")
+      .send({
+        username: newMockUserUsername,
+        name: "blogman",
+        password: newMockUserPassword,
+      })
+      .expect(201);
+
+    // login with new User
+    const newUserLogin = await api
+      .post("/api/login")
+      .send({ username: newMockUserUsername, password: newMockUserPassword })
+      .expect(200);
+
+    const newUserToken = `Bearer ${newUserLogin.body.token}`;
+
+    const oldUserToken = activeToken;
+    // create blog with new user
+    const {
+      body: { id: blogToDeleteId },
+    } = await api
+      .post("/api/blogs")
+      .send({
+        title: "mockblog",
+        author: "mockAuth",
+        url: "https://mooogle.com",
+        likes: 1,
+      })
+      .set("Authorization", newUserToken)
+      .expect(201);
+
+    const blogsWithNewInserted = await helper.blogsInDb();
+
+    expect(blogsWithNewInserted).toHaveLength(
+      helper.listWithManyBlogs.length + 1
+    );
+
+    // run delete with old user
+    const responseWithIncorrectUser = await api
+      .delete(`/api/blogs/${blogToDeleteId}`)
+      .set("Authorization", oldUserToken)
+      .expect(401);
+
+    expect(responseWithIncorrectUser.body).toHaveProperty(
+      "error",
+      "unauthorized"
+    );
+
+    const blogsAfterDeletionAttemptWithIncorrectUser = await helper.blogsInDb();
+
+    expect(blogsAfterDeletionAttemptWithIncorrectUser).toHaveLength(
+      // No change expected
+      blogsWithNewInserted.length
+    );
+
+    // run delete with new user
+    await api
+      .delete(`/api/blogs/${blogToDeleteId}`)
+      .set("Authorization", newUserToken)
+      .expect(204);
+    const blogsAtEnd = await helper.blogsInDb();
+
+    expect(blogsAtEnd).toHaveLength(helper.listWithManyBlogs.length);
   });
 
   test("a blog can be updated", async () => {
