@@ -53,7 +53,11 @@ blogRoute.put("/:id", async (request, response) => {
     },
     { new: true }
   );
-  response.status(200).json(updatedBlog);
+  const populatedUpdatedBlog = await updatedBlog.populate("user", {
+    username: 1,
+    name: 1,
+  });
+  response.status(200).json(populatedUpdatedBlog);
 });
 
 blogRoute.delete("/:id", userExtractor, async (request, response) => {
