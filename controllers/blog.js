@@ -32,7 +32,11 @@ blogRoute.post("/", userExtractor, async (request, response) => {
   const blog = new Blog(blogToCreate);
 
   const newBlog = await blog.save();
-  response.status(201).json(newBlog);
+  const populatedNewBlog = await newBlog.populate("user", {
+    username: 1,
+    name: 1,
+  });
+  response.status(201).json(populatedNewBlog);
 
   return null;
 });
